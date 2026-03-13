@@ -24,6 +24,10 @@ npm run build
 npm run preview
 ```
 
+## CI
+
+GitHub Actions is configured in `.github/workflows/ci.yml` to run a production build on every push to `main` and on pull requests.
+
 ## Vercel deployment
 
 This repository is ready to deploy on Vercel.
