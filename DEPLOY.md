@@ -29,7 +29,11 @@ The frontend sends a JSON `POST` request to that endpoint with the submitted app
 3. Build command: `npm run build`.
 4. Output directory: `dist`.
 5. `vercel.json` already includes SPA rewrites.
-6. Add `VITE_APPOINTMENT_ENDPOINT` if you want live booking submissions.
+6. Add these environment variables:
+	`VITE_SITE_ID=nissi-therapy-site`
+	`VITE_APP_VERSION=1.0.0`
+	`VITE_SITE_BASE_URL=https://your-vercel-domain.vercel.app`
+7. Add `VITE_APPOINTMENT_ENDPOINT` if you want live booking submissions.
 
 ## Netlify
 
