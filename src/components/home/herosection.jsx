@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
+import { useIsMobile } from '../hooks/use-mobile.jsx';
 
 const ENCOURAGEMENT_PATHS = [
   {
@@ -42,8 +43,133 @@ const CONSOLE_MESSAGES = [
 
 export default function HeroSection({ onBookClick }) {
   const shouldReduceMotion = useReducedMotion();
+  const isMobile = useIsMobile();
   const [activePathId, setActivePathId] = useState(ENCOURAGEMENT_PATHS[0].id);
   const activePath = ENCOURAGEMENT_PATHS.find((path) => path.id === activePathId) || ENCOURAGEMENT_PATHS[0];
+
+  if (isMobile) {
+    return (
+      <section
+        data-bg="#1A0F2E"
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+          position: 'relative',
+          padding: '96px 18px 132px',
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'radial-gradient(circle at 50% 8%, rgba(124,58,237,0.22), transparent 26%), radial-gradient(circle at 85% 75%, rgba(134,239,172,0.12), transparent 24%), linear-gradient(180deg, rgba(255,255,255,0.02), transparent 58%)',
+            pointerEvents: 'none',
+          }}
+        />
+        <motion.div
+          aria-hidden="true"
+          className="hero-mobile-halo"
+          animate={shouldReduceMotion ? undefined : { scale: [1, 1.04, 1], opacity: [0.72, 0.92, 0.72] }}
+          transition={shouldReduceMotion ? undefined : { duration: 7.2, repeat: Infinity, ease: 'easeInOut' }}
+        />
+
+        <div className="hero-mobile-shell">
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="hero-mobile-top"
+          >
+            <p className="hero-mobile-kicker">Private Therapeutic Space</p>
+            <div className="hero-mobile-badge-row">
+              <motion.div
+                className="hero-mobile-orb"
+                animate={shouldReduceMotion ? undefined : { scale: [1, 1.08, 1] }}
+                transition={shouldReduceMotion ? undefined : { duration: 4.2, repeat: Infinity, ease: 'easeInOut' }}
+              />
+              <div className="hero-mobile-badge-copy">
+                <span className="hero-mobile-badge-label">{activePath.kicker}</span>
+                <strong className="hero-mobile-badge-title">Tamar Nissi</strong>
+              </div>
+            </div>
+
+            <h1 className="hero-mobile-title">A steadier future can begin softly.</h1>
+            <p className="hero-mobile-subtitle">Find steadier ground, one considered step at a time.</p>
+            <p className="hero-mobile-body">
+              A calm digital sanctuary for people moving through heavy seasons. On mobile, every step is simplified to feel lighter, clearer, and easier to trust.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.8, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+            className="hero-mobile-feature-card editorial-panel"
+          >
+            <p className="section-kicker">{activePath.kicker}</p>
+            <h2 className="hero-mobile-feature-title">{activePath.headline}</h2>
+            <p className="hero-mobile-feature-body">{activePath.body}</p>
+
+            <div className="hero-mobile-signal-list">
+              {CONSOLE_MESSAGES.map((message) => (
+                <div key={message} className="hero-mobile-signal-item">
+                  <span className="hero-mobile-signal-dot" style={{ background: activePath.accent, boxShadow: `0 0 14px ${activePath.glow}` }} />
+                  <span>{message}</span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          <div className="hero-mobile-path-list">
+            {ENCOURAGEMENT_PATHS.map((path, index) => {
+              const isActive = path.id === activePath.id;
+              return (
+                <motion.button
+                  key={path.id}
+                  type="button"
+                  className={`hero-mobile-path-card ${isActive ? 'hero-mobile-path-card-active' : ''}`}
+                  onClick={() => setActivePathId(path.id)}
+                  initial={shouldReduceMotion ? false : { opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, delay: 0.12 + index * 0.06, ease: [0.22, 1, 0.36, 1] }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <span className="hero-mobile-path-head">
+                    <span className="hero-mobile-path-dot" style={{ background: path.accent, boxShadow: `0 0 12px ${path.glow}` }} />
+                    <span className="hero-mobile-path-label">{path.label}</span>
+                  </span>
+                  <span className="hero-mobile-path-chip">{path.chips[0]}</span>
+                </motion.button>
+              );
+            })}
+          </div>
+
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.65, delay: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            className="hero-mobile-actions"
+          >
+            <motion.button
+              onClick={onBookClick}
+              className="cta-button hero-mobile-cta"
+              whileHover={shouldReduceMotion ? undefined : { scale: 1.01 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              Reserve My Safe First Step
+            </motion.button>
+            <div className="hero-mobile-chip-row">
+              <span className="detail-chip">Complimentary consult</span>
+              <span className="detail-chip">Response within 24 hours</span>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
