@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { siteApi } from '../api/siteApi.js';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { CheckCircle, User, Heart, Shield, GraduationCap } from 'lucide-react';
 import { bookingExperience } from '../data/siteContent.js';
+import { useIsMobile } from '../components/hooks/use-mobile.jsx';
 
 const SERVICES = [
   { id: 'individual', label: 'Individual Therapy', Icon: User, desc: 'One-on-one sessions for personal growth and healing', color: '#C4B5FD' },
@@ -32,7 +33,22 @@ const SAFE_SIGNALS = [
   'Pressure-free consult',
 ];
 
+const MOBILE_STEP_COPY = {
+  1: {
+    kicker: 'Step 1 of 2',
+    title: 'Choose support',
+    body: 'Pick what fits, then add your name and email.',
+  },
+  2: {
+    kicker: 'Step 2 of 2',
+    title: 'Add a little detail',
+    body: 'Share timing and anything helpful. Keep it brief if you want.',
+  },
+};
+
 export default function Book() {
+  const isMobile = useIsMobile();
+  const shouldReduceMotion = useReducedMotion();
   const [form, setForm] = useState({ name: '', email: '', phone: '', service_type: '', message: '', preferred_time: '' });
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -41,6 +57,35 @@ export default function Book() {
 
   const selectedService = SERVICES.find((service) => service.id === form.service_type);
   const activeStep = BOOKING_STEPS.find((step) => step.id === currentStep) || BOOKING_STEPS[0];
+  const mobileStep = MOBILE_STEP_COPY[currentStep] || MOBILE_STEP_COPY[1];
+
+  useEffect(() => {
+    if (!isMobile) return undefined;
+
+    const detail = currentStep === 1
+      ? {
+          kicker: 'First step',
+          label: 'Start Form',
+          targetId: 'booking-form-start',
+        }
+      : {
+          kicker: 'Next step',
+          label: 'Finish Details',
+          targetId: 'booking-step-2',
+        };
+
+    window.dispatchEvent(new CustomEvent('booking-mobile-action-change', { detail }));
+
+    return () => {
+      window.dispatchEvent(new CustomEvent('booking-mobile-action-change', {
+        detail: {
+          kicker: 'Continue',
+          label: 'Go to Details',
+          targetId: 'booking-form-start',
+        },
+      }));
+    };
+  }, [currentStep, isMobile]);
 
   const set = (field) => (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
@@ -69,16 +114,16 @@ export default function Book() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
           className="glass-card"
-          style={{ maxWidth: 480, width: '100%', padding: '64px 44px', textAlign: 'center' }}
+          style={{ maxWidth: 480, width: '100%', padding: isMobile ? '38px 24px' : '64px 44px', textAlign: 'center' }}
         >
           <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.4, type: 'spring', stiffness: 180 }} style={{ marginBottom: '2rem' }}>
-            <CheckCircle size={72} style={{ color: '#86EFAC', margin: '0 auto' }} />
+            <CheckCircle size={isMobile ? 58 : 72} style={{ color: '#86EFAC', margin: '0 auto' }} />
           </motion.div>
-          <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '2.4rem', fontWeight: 700, color: '#C4B5FD', letterSpacing: '-0.02em', lineHeight: 1.2, marginBottom: '1.25rem' }}>
+          <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: isMobile ? '2rem' : '2.4rem', fontWeight: 700, color: '#C4B5FD', letterSpacing: '-0.02em', lineHeight: 1.2, marginBottom: '1.25rem' }}>
             Your first step is in motion.
           </h2>
-          <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '1.05rem', color: 'rgba(253,248,240,0.6)', lineHeight: 1.8 }}>
-            Thank you for reaching out. Tamar will be in touch within 24 hours with clear next steps and a time that feels workable for you.
+          <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: isMobile ? '0.96rem' : '1.05rem', color: 'rgba(253,248,240,0.6)', lineHeight: 1.8 }}>
+            Thank you for reaching out. Tamar will follow up within 24 hours with the next step.
           </p>
           {selectedService ? (
             <div className="detail-chip-row" style={{ justifyContent: 'center', marginTop: '1.4rem' }}>
@@ -95,6 +140,218 @@ export default function Book() {
   const encouragementLine = selectedService
     ? `You chose ${selectedService.label.toLowerCase()} — a thoughtful first step toward steadier ground.`
     : 'Choose the kind of support that feels closest to what you need right now.';
+
+  const renderStepOne = (mobile = false) => (
+    <>
+      <div>
+        <label style={{ fontFamily: 'Manrope, sans-serif', fontSize: mobile ? '0.72rem' : '0.78rem', color: 'rgba(196,181,253,0.6)', letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 600, display: 'block', marginBottom: mobile ? '10px' : '14px' }}>
+          What brings you here?
+        </label>
+        <div style={{ display: 'grid', gridTemplateColumns: mobile ? '1fr' : 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+          {SERVICES.map(({ id, label, Icon, desc, color }) => {
+            const selected = form.service_type === id;
+            return (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setForm((p) => ({ ...p, service_type: id }))}
+                style={{
+                  background: selected ? 'linear-gradient(135deg, rgba(196,181,253,0.14), rgba(134,239,172,0.08))' : 'rgba(196,181,253,0.03)',
+                  border: `1px solid ${selected ? 'rgba(196,181,253,0.38)' : 'rgba(196,181,253,0.1)'}`,
+                  borderRadius: mobile ? '16px' : '18px', padding: mobile ? '16px 14px' : '20px 16px',
+                  cursor: 'pointer', textAlign: 'left',
+                  transition: 'all 0.3s ease', minHeight: '44px',
+                  boxShadow: selected ? '0 18px 36px rgba(12, 18, 36, 0.18)' : 'none',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: mobile ? '4px' : '6px' }}>
+                  <Icon size={16} style={{ color }} />
+                  <span style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 600, color, fontSize: mobile ? '0.88rem' : '0.9rem' }}>{label}</span>
+                </div>
+                <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: mobile ? '0.76rem' : '0.8rem', color: 'rgba(253,248,240,0.38)', lineHeight: 1.5, margin: 0 }}>{mobile ? desc.split(',')[0] : desc}</p>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {selectedService ? (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          style={{
+            padding: mobile ? '0.9rem 1rem' : '1rem 1.1rem',
+            borderRadius: mobile ? '16px' : '18px',
+            border: `1px solid ${selectedService.color}33`,
+            background: 'rgba(255,255,255,0.03)',
+          }}
+        >
+          <p style={{ margin: '0 0 0.35rem', fontFamily: 'Manrope, sans-serif', fontSize: mobile ? '0.7rem' : '0.76rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: selectedService.color, fontWeight: 700 }}>
+            Selected
+          </p>
+          <h3 style={{ margin: 0, fontFamily: 'Playfair Display, serif', fontSize: mobile ? '1.15rem' : '1.35rem', color: '#F8F2FF' }}>
+            {selectedService.label}
+          </h3>
+        </motion.div>
+      ) : null}
+
+      <div>
+        <label style={{ fontFamily: 'Manrope, sans-serif', fontSize: mobile ? '0.72rem' : '0.78rem', color: 'rgba(196,181,253,0.6)', letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 600, display: 'block', marginBottom: '10px' }}>Your Name</label>
+        <input required value={form.name} onChange={set('name')} placeholder="Full name" className="immersive-input" />
+      </div>
+
+      <div>
+        <label style={{ fontFamily: 'Manrope, sans-serif', fontSize: mobile ? '0.72rem' : '0.78rem', color: 'rgba(196,181,253,0.6)', letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 600, display: 'block', marginBottom: '10px' }}>Email Address</label>
+        <input required type="email" value={form.email} onChange={set('email')} placeholder="your@email.com" className="immersive-input" />
+      </div>
+    </>
+  );
+
+  const renderStepTwo = (mobile = false) => (
+    <>
+      <div>
+        <label style={{ fontFamily: 'Manrope, sans-serif', fontSize: mobile ? '0.72rem' : '0.78rem', color: 'rgba(196,181,253,0.6)', letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 600, display: 'block', marginBottom: '10px' }}>Preferred Time</label>
+        <input value={form.preferred_time} onChange={set('preferred_time')} placeholder="Weekday mornings" className="immersive-input" />
+      </div>
+
+      <div>
+        <label style={{ fontFamily: 'Manrope, sans-serif', fontSize: mobile ? '0.72rem' : '0.78rem', color: 'rgba(196,181,253,0.6)', letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 600, display: 'block', marginBottom: '10px' }}>
+          Phone <span style={{ color: 'rgba(196,181,253,0.28)', textTransform: 'none', letterSpacing: 0 }}>(optional)</span>
+        </label>
+        <input value={form.phone} onChange={set('phone')} placeholder="Phone number" className="immersive-input" />
+      </div>
+
+      <div>
+        <label style={{ fontFamily: 'Manrope, sans-serif', fontSize: mobile ? '0.72rem' : '0.78rem', color: 'rgba(196,181,253,0.6)', letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 600, display: 'block', marginBottom: '10px' }}>
+          Note <span style={{ color: 'rgba(196,181,253,0.28)', textTransform: 'none', letterSpacing: 0 }}>(optional)</span>
+        </label>
+        <textarea value={form.message} onChange={set('message')} rows={mobile ? 3 : 4} placeholder="A few words is enough." className="immersive-input" style={{ resize: 'vertical', minHeight: mobile ? '96px' : '120px' }} />
+      </div>
+    </>
+  );
+
+  if (isMobile) {
+    return (
+      <div style={{
+        background: 'linear-gradient(160deg, #1A0F2E 0%, #0F1E30 60%, #1A0F2E 100%)',
+        minHeight: '100vh',
+        paddingBottom: '112px',
+        overflowX: 'hidden',
+      }}>
+        <div style={{ position: 'fixed', top: -80, right: -120, width: 280, height: 280, borderRadius: '50%', background: 'radial-gradient(circle, rgba(124,58,237,0.18), transparent 70%)', filter: 'blur(64px)', pointerEvents: 'none', zIndex: 0 }} />
+
+        <div className="page-shell page-shell-narrow" style={{ paddingTop: '92px', position: 'relative', zIndex: 1 }}>
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            className="mobile-book-hero"
+          >
+            <p className="section-kicker" style={{ marginBottom: '0.65rem' }}>{mobileStep.kicker}</p>
+            <h1 className="mobile-book-title">{mobileStep.title}</h1>
+            <p className="mobile-book-copy">{mobileStep.body}</p>
+            <div className="mobile-book-progress" aria-hidden="true">
+              {BOOKING_STEPS.map((step) => {
+                const isActive = step.id === currentStep;
+                const isComplete = currentStep > step.id;
+                return (
+                  <span key={step.id} className={`mobile-book-progress-pill ${isActive ? 'mobile-book-progress-pill-active' : ''} ${isComplete ? 'mobile-book-progress-pill-complete' : ''}`} />
+                );
+              })}
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
+            className="mobile-book-focus-card"
+          >
+            <div className="detail-chip-row">
+              <span className="detail-chip">Private</span>
+              <span className="detail-chip">2 quick steps</span>
+              <span className="detail-chip">24h reply</span>
+            </div>
+            {selectedService ? (
+              <p className="mobile-book-selected-copy">{selectedService.label} selected.</p>
+            ) : (
+              <p className="mobile-book-selected-copy">Choose support and keep moving.</p>
+            )}
+          </motion.div>
+
+          <motion.form
+            id="booking-form-start"
+            onSubmit={handleSubmit}
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 22 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.65, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+            className="mobile-book-form"
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                id={currentStep === 1 ? 'booking-form-start' : 'booking-step-2'}
+                key={currentStep}
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 20, filter: 'blur(8px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                exit={shouldReduceMotion ? undefined : { opacity: 0, y: -10, filter: 'blur(6px)' }}
+                transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                className="mobile-book-step-card"
+              >
+                {currentStep === 1 ? renderStepOne(true) : renderStepTwo(true)}
+              </motion.div>
+            </AnimatePresence>
+
+            <div className="mobile-book-actions">
+              {currentStep === 2 ? (
+                <motion.button
+                  type="button"
+                  onClick={() => setCurrentStep(1)}
+                  className="cta-button-outline"
+                  whileTap={{ scale: 0.98 }}
+                >
+                  Back
+                </motion.button>
+              ) : null}
+
+              {currentStep === 1 ? (
+                <motion.button
+                  type="button"
+                  onClick={() => setCurrentStep(2)}
+                  disabled={!canContinue}
+                  className="cta-button"
+                  style={{ opacity: canContinue ? 1 : 0.45 }}
+                  whileTap={canContinue ? { scale: 0.98 } : {}}
+                >
+                  Next
+                </motion.button>
+              ) : (
+                <motion.button
+                  type="submit"
+                  disabled={submitting || !canSubmit}
+                  className="cta-button"
+                  style={{ opacity: (!canSubmit || submitting) ? 0.45 : 1 }}
+                  whileTap={canSubmit && !submitting ? { scale: 0.98 } : {}}
+                >
+                  {submitting ? 'Sending...' : 'Send Request'}
+                </motion.button>
+              )}
+            </div>
+
+            {submitError ? (
+              <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '0.86rem', color: '#fda4af', textAlign: 'center', lineHeight: 1.65, margin: 0 }}>
+                {submitError}
+              </p>
+            ) : null}
+
+            <p className="mobile-book-footnote">
+              Confidential. Complimentary 30-minute consult.
+            </p>
+          </motion.form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{
