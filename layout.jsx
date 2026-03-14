@@ -13,6 +13,7 @@ export default function Layout({ children, currentPageName }) {
     kicker: 'Continue',
     label: 'Go to Details',
     targetId: 'booking-form-start',
+    hidden: false,
   });
   const { scrollYProgress } = useScroll();
   const progressScaleX = useSpring(scrollYProgress, { stiffness: 140, damping: 30, mass: 0.2 });
@@ -47,6 +48,7 @@ export default function Layout({ children, currentPageName }) {
         kicker: detail.kicker || 'Continue',
         label: detail.label || 'Go to Details',
         targetId: detail.targetId || 'booking-form-start',
+        hidden: Boolean(detail.hidden),
       });
     };
 
@@ -136,7 +138,7 @@ export default function Layout({ children, currentPageName }) {
         {children}
       </main>
 
-      {isMobile && !mobileMenuOpen ? (
+      {isMobile && !mobileMenuOpen && !mobileBookingAction.hidden ? (
         currentPageName === 'Book' ? (
           <button type="button" className="mobile-quick-book" onClick={handleMobileQuickAction}>
             <span className="mobile-quick-book-kicker">{mobileBookingAction.kicker}</span>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { siteApi } from '../api/siteApi.js';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { CheckCircle, User, Heart, Shield, GraduationCap } from 'lucide-react';
@@ -46,14 +46,29 @@ const MOBILE_STEP_COPY = {
   },
 };
 
+function LoadingInline({ label }) {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
+      <span className="loading-orbit" aria-hidden="true">
+        <span className="loading-orbit-dot loading-orbit-dot-a" />
+        <span className="loading-orbit-dot loading-orbit-dot-b" />
+        <span className="loading-orbit-dot loading-orbit-dot-c" />
+      </span>
+      <span>{label}</span>
+    </span>
+  );
+}
+
 export default function Book() {
   const isMobile = useIsMobile();
   const shouldReduceMotion = useReducedMotion();
+  const mobileFormRef = useRef(null);
   const [form, setForm] = useState({ name: '', email: '', phone: '', service_type: '', message: '', preferred_time: '' });
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [currentStep, setCurrentStep] = useState(1);
+  const [isFormFocused, setIsFormFocused] = useState(false);
 
   const selectedService = SERVICES.find((service) => service.id === form.service_type);
   const activeStep = BOOKING_STEPS.find((step) => step.id === currentStep) || BOOKING_STEPS[0];
@@ -67,11 +82,13 @@ export default function Book() {
           kicker: 'First step',
           label: 'Start Form',
           targetId: 'booking-form-start',
+          hidden: isFormFocused,
         }
       : {
           kicker: 'Next step',
           label: 'Finish Details',
           targetId: 'booking-step-2',
+          hidden: isFormFocused,
         };
 
     window.dispatchEvent(new CustomEvent('booking-mobile-action-change', { detail }));
@@ -82,10 +99,23 @@ export default function Book() {
           kicker: 'Continue',
           label: 'Go to Details',
           targetId: 'booking-form-start',
+          hidden: false,
         },
       }));
     };
-  }, [currentStep, isMobile]);
+  }, [currentStep, isFormFocused, isMobile]);
+
+  const handleMobileFormFocus = () => {
+    setIsFormFocused(true);
+  };
+
+  const handleMobileFormBlur = () => {
+    window.setTimeout(() => {
+      if (!mobileFormRef.current) return;
+      const { activeElement } = document;
+      setIsFormFocused(Boolean(activeElement && mobileFormRef.current.contains(activeElement)));
+    }, 0);
+  };
 
   const set = (field) => (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
@@ -282,7 +312,10 @@ export default function Book() {
 
           <motion.form
             id="booking-form-start"
+            ref={mobileFormRef}
             onSubmit={handleSubmit}
+            onFocusCapture={handleMobileFormFocus}
+            onBlurCapture={handleMobileFormBlur}
             initial={shouldReduceMotion ? false : { opacity: 0, y: 22 }}
             animate={{ opacity: 1, y: 0 }}
             transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.65, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
@@ -333,7 +366,7 @@ export default function Book() {
                   style={{ opacity: (!canSubmit || submitting) ? 0.45 : 1 }}
                   whileTap={canSubmit && !submitting ? { scale: 0.98 } : {}}
                 >
-                  {submitting ? 'Sending...' : 'Send Request'}
+                  {submitting ? <LoadingInline label="Sending..." /> : 'Send Request'}
                 </motion.button>
               )}
             </div>
@@ -640,7 +673,7 @@ export default function Book() {
                   whileHover={canSubmit && !submitting ? { scale: 1.02, y: -2 } : {}}
                   whileTap={canSubmit && !submitting ? { scale: 0.98 } : {}}
                 >
-                  {submitting ? 'Sending your request...' : 'Reserve My Safe First Step'}
+                  {submitting ? <LoadingInline label="Sending your request..." /> : 'Reserve My Safe First Step'}
                 </motion.button>
               </div>
             </>
