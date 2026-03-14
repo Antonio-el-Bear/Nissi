@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Analytics } from '@vercel/analytics/react';
 import Layout from './layout.jsx';
 import Home from './src/pages/home.jsx';
 import About from './src/pages/about.jsx';
@@ -61,6 +62,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <RoutedApp />
+      <Analytics />
     </BrowserRouter>
   );
 }
