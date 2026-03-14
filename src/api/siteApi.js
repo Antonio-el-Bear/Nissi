@@ -1,7 +1,7 @@
 import { blogPosts } from '../data/siteContent.js';
 
 const APPOINTMENTS_STORAGE_KEY = 'nissi_appointments';
-const appointmentEndpoint = import.meta.env.VITE_APPOINTMENT_ENDPOINT;
+const configuredAppointmentEndpoint = import.meta.env.VITE_APPOINTMENT_ENDPOINT;
 
 const wait = (ms = 240) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -26,6 +26,19 @@ function writeAppointments(appointments) {
   window.localStorage.setItem(APPOINTMENTS_STORAGE_KEY, JSON.stringify(appointments));
 }
 
+function getAppointmentEndpoint() {
+  if (configuredAppointmentEndpoint) {
+    return configuredAppointmentEndpoint;
+  }
+
+  if (typeof window === 'undefined') {
+    return '';
+  }
+
+  const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+  return isLocalhost ? '' : '/api/appointments';
+}
+
 export const siteApi = {
   async listBlogPosts() {
     await wait(180);
@@ -47,6 +60,8 @@ export const siteApi = {
       ...payload,
     };
 
+    const appointmentEndpoint = getAppointmentEndpoint();
+
     if (appointmentEndpoint) {
       const response = await fetch(appointmentEndpoint, {
         method: 'POST',
@@ -57,7 +72,8 @@ export const siteApi = {
       });
 
       if (!response.ok) {
-        throw new Error('Appointment submission failed.');
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Appointment submission failed.');
       }
 
       return appointment;
