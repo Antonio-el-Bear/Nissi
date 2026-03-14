@@ -3,8 +3,10 @@ import { motion, useScroll, useSpring } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { createPageUrl } from './src/utils/routes.js';
+import { useIsMobile } from './src/components/hooks/use-mobile.jsx';
 
 export default function Layout({ children, currentPageName }) {
+  const isMobile = useIsMobile();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { scrollYProgress } = useScroll();
@@ -38,7 +40,7 @@ export default function Layout({ children, currentPageName }) {
   ];
 
   return (
-    <div className="site-shell">
+    <div className={`site-shell ${isMobile ? 'site-shell-mobile' : ''}`}>
       <motion.div className="scroll-progress" style={{ scaleX: progressScaleX }} />
       <div className="ambient-grid" aria-hidden="true" />
       <div className="ambient-orb ambient-orb-left" aria-hidden="true" />
@@ -64,9 +66,11 @@ export default function Layout({ children, currentPageName }) {
           </nav>
 
           <div className="header-actions">
-            <Link to={createPageUrl('Book')} className="cta-button header-cta">
-              Book a Session
-            </Link>
+            {isMobile ? null : (
+              <Link to={createPageUrl('Book')} className="cta-button header-cta">
+                Book a Session
+              </Link>
+            )}
             <button
               type="button"
               className="mobile-menu-button"
@@ -104,20 +108,12 @@ export default function Layout({ children, currentPageName }) {
         {children}
       </main>
 
-      <nav className="mobile-bottom-nav" aria-label="Mobile quick navigation">
-        {navItems.map((item) => (
-          <Link
-            key={item.page}
-            to={createPageUrl(item.page)}
-            className={`mobile-bottom-link ${currentPageName === item.page ? 'mobile-bottom-link-active' : ''}`}
-          >
-            {item.label}
-          </Link>
-        ))}
-        <Link to={createPageUrl('Book')} className="mobile-bottom-book">
-          Book
+      {isMobile && !mobileMenuOpen ? (
+        <Link to={createPageUrl('Book')} className="mobile-quick-book">
+          <span className="mobile-quick-book-kicker">First step</span>
+          <span className="mobile-quick-book-label">Book a Session</span>
         </Link>
-      </nav>
+      ) : null}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { animate, stagger } from 'animejs';
 import { motion, useInView, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { useIsMobile } from '../hooks/use-mobile.jsx';
 
 const SERVICES = [
   {
@@ -55,6 +56,7 @@ function ServiceCard({ service, index }) {
   const imageRef = useRef(null);
   const badgeRef = useRef(null);
   const shouldReduceMotion = useReducedMotion();
+  const isMobile = useIsMobile();
   const isInView = useInView(ref, { threshold: 0.18, once: true });
   const isEven = index % 2 === 0;
 
@@ -122,7 +124,7 @@ function ServiceCard({ service, index }) {
     <div
       ref={ref}
       data-bg={service.bg}
-      style={{ padding: '64px 0', position: 'relative', overflow: 'hidden' }}
+      style={{ padding: isMobile ? '28px 0' : '64px 0', position: 'relative', overflow: 'hidden' }}
     >
       {/* Section glow */}
       <div style={{
@@ -136,14 +138,22 @@ function ServiceCard({ service, index }) {
       <div className="max-w-6xl mx-auto px-6" style={{ position: 'relative', zIndex: 1 }}>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '48px',
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: isMobile ? '18px' : '48px',
           alignItems: 'center',
         }}>
           {/* Text */}
           <motion.div
             ref={textRef}
-            style={{ order: isEven ? 0 : 1, y: textY }}
+            style={{
+              order: isMobile ? 1 : (isEven ? 0 : 1),
+              y: textY,
+              padding: isMobile ? '1.2rem 1.1rem 1.3rem' : 0,
+              borderRadius: isMobile ? '1.5rem' : 0,
+              border: isMobile ? '1px solid rgba(196,181,253,0.1)' : 'none',
+              background: isMobile ? 'linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.025))' : 'transparent',
+              backdropFilter: isMobile ? 'blur(18px)' : 'none',
+            }}
           >
             <motion.div
               data-service-reveal
@@ -174,7 +184,7 @@ function ServiceCard({ service, index }) {
             <p data-service-reveal style={{
               fontFamily: 'Manrope, sans-serif', fontSize: '1.05rem',
               color: 'rgba(253,248,240,0.65)', lineHeight: 1.85,
-              maxWidth: '440px', marginBottom: '2rem',
+              maxWidth: isMobile ? '100%' : '440px', marginBottom: '2rem',
             }}>
               {service.description}
             </p>
@@ -192,14 +202,15 @@ function ServiceCard({ service, index }) {
           {/* Image with parallax */}
           <motion.div
             ref={imageRef}
-            style={{ order: isEven ? 1 : 0, y: imgY, position: 'relative' }}
+            style={{ order: isMobile ? 0 : (isEven ? 1 : 0), y: imgY, position: 'relative' }}
             whileHover={shouldReduceMotion ? undefined : { scale: 1.01 }}
           >
             <div style={{
-              width: '100%', aspectRatio: '4/3',
-              borderRadius: '24px', overflow: 'hidden',
+              width: '100%', aspectRatio: isMobile ? '5/4' : '4/3',
+              borderRadius: isMobile ? '28px' : '24px', overflow: 'hidden',
               border: `1px solid ${service.accent}28`,
               position: 'relative',
+              boxShadow: isMobile ? '0 20px 46px rgba(5, 3, 14, 0.32)' : 'none',
             }}>
               <motion.img
                 src={service.image}
