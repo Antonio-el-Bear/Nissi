@@ -1,6 +1,6 @@
 # Nissi
 
-Therapy practice website for Thamar Nissi built with Vite, React, Framer Motion, and a custom local content and booking layer.
+Therapy practice website for Tamar Nissi built with Vite, React, Framer Motion, and a custom local content and booking layer.
 
 ## Stack
 

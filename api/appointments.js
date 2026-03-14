@@ -88,7 +88,7 @@ function buildAutoReplyEmail(appointment) {
       <div style="font-family: Arial, sans-serif; line-height: 1.7; color: #111827;">
         <h2 style="margin-bottom: 12px;">Your first step is in motion.</h2>
         <p>Hi ${appointment.name},</p>
-        <p>Thank you for reaching out to Thamar Nissi. Your request has been received, and a follow-up will be sent within 24 hours with clear next steps.</p>
+        <p>Thank you for reaching out to Tamar Nissi. Your request has been received, and a follow-up will be sent within 24 hours with clear next steps.</p>
         <p>You do not need to do anything else right now. This space is designed to feel calm, clear, and pressure-free.</p>
         <p style="margin-top: 24px;">Warmly,<br />Nissi Therapy Practice</p>
       </div>

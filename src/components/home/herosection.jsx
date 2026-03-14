@@ -110,7 +110,7 @@ export default function HeroSection({ onBookClick }) {
               Private Therapeutic Space
             </p>
             <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(4rem, 11vw, 8rem)', fontWeight: 900, color: '#E9D5FF', letterSpacing: '-0.04em', lineHeight: 0.96, margin: '0 0 1rem' }}>
-              Thamar<br />Nissi
+              Tamar<br />Nissi
             </h1>
             <p style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(1.2rem, 2.8vw, 1.8rem)', fontStyle: 'italic', color: '#A7F3D0', margin: '0 0 1.1rem' }}>
               Find steadier ground, one considered step at a time.

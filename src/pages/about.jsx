@@ -59,7 +59,7 @@ export default function About() {
               About
             </p>
             <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(3rem, 7vw, 5.5rem)', fontWeight: 900, color: '#C4B5FD', letterSpacing: '-0.02em', lineHeight: 1.05, marginBottom: '2rem' }}>
-              Thamar<br />Nissi
+              Tamar<br />Nissi
             </h1>
             <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '1.1rem', color: 'rgba(253,248,240,0.68)', lineHeight: 1.85, marginBottom: '1.5rem' }}>
               I became a therapist because I believe that healing is the most courageous act a person can choose. My practice is rooted in warmth, science, and a deep respect for the complexity of human experience.
@@ -84,7 +84,7 @@ export default function About() {
             <div style={{ width: '100%', aspectRatio: '3/4', borderRadius: '28px', overflow: 'hidden', border: '1px solid rgba(196,181,253,0.12)', position: 'relative' }}>
               <img
                 src={therapistPortrait}
-                alt="Thamar Nissi, therapist"
+                alt="Tamar Nissi, therapist"
                 style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.7) saturate(0.65)' }}
               />
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(45,27,78,0.55), transparent 50%)' }} />
@@ -124,7 +124,7 @@ export default function About() {
                 Healing work should feel structured enough to be safe and human enough to feel like relief. The practice balances research-backed tools with gentleness, pacing, and trust.
               </p>
               <button onClick={() => navigate(createPageUrl('Book'))} className="cta-button">
-                Begin with Thamar
+                Begin with Tamar
               </button>
             </div>
           </FadeSection>

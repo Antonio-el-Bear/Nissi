@@ -22,7 +22,7 @@ const BOOKING_STEPS = [
     id: 2,
     label: 'Shape the session',
     title: 'Add the details that would help this feel easier.',
-    description: 'Tell us when you prefer to meet and anything you want Thamar to hold in mind before reaching out.',
+    description: 'Tell us when you prefer to meet and anything you want Tamar to hold in mind before reaching out.',
   },
 ];
 
@@ -78,7 +78,7 @@ export default function Book() {
             Your first step is in motion.
           </h2>
           <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '1.05rem', color: 'rgba(253,248,240,0.6)', lineHeight: 1.8 }}>
-            Thank you for reaching out. Thamar will be in touch within 24 hours with clear next steps and a time that feels workable for you.
+            Thank you for reaching out. Tamar will be in touch within 24 hours with clear next steps and a time that feels workable for you.
           </p>
           {selectedService ? (
             <div className="detail-chip-row" style={{ justifyContent: 'center', marginTop: '1.4rem' }}>
@@ -198,7 +198,7 @@ export default function Book() {
             Enter a calmer future.
           </h1>
           <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: '1.05rem', color: 'rgba(253,248,240,0.5)', lineHeight: 1.8, marginBottom: '3rem' }}>
-            This is a two-step arrival, not a cold intake. Share only what feels useful right now, and Thamar will follow up with clarity and care.
+            This is a two-step arrival, not a cold intake. Share only what feels useful right now, and Tamar will follow up with clarity and care.
           </p>
         </motion.div>
 

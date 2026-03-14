@@ -48,7 +48,7 @@ export default function Layout({ children, currentPageName }) {
         <div className="site-header-inner">
           <Link to={createPageUrl('Home')} className="brand-mark" aria-label="Go to home page">
             <span className="brand-mark-kicker">Therapy Practice</span>
-            <span className="brand-mark-name">Thamar Nissi</span>
+            <span className="brand-mark-name">Tamar Nissi</span>
           </Link>
 
           <nav className="desktop-nav" aria-label="Primary navigation">

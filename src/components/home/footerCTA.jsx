@@ -114,7 +114,7 @@ export default function FooterCTA({ onBookClick }) {
           color: 'rgba(196,181,253,0.18)', position: 'relative', zIndex: 1,
         }}
       >
-        <span>© 2026 Thamar Nissi</span>
+        <span>© 2026 Tamar Nissi</span>
         <span>·</span>
         <span>All sessions are strictly confidential</span>
         <span>·</span>

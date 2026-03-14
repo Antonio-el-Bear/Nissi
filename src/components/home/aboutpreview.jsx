@@ -66,7 +66,7 @@ export default function AboutPreview({ onLearnMore, onBlogClick }) {
           <div style={{ borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(196,181,253,0.1)', aspectRatio: '3/4', position: 'relative' }}>
             <motion.img
               src={therapistPortrait}
-              alt="Thamar Nissi"
+              alt="Tamar Nissi"
               style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.65) saturate(0.6)', scale: imgScale, y: imgY }}
             />
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(26,15,46,0.6) 0%, transparent 50%)' }} />
@@ -109,11 +109,11 @@ export default function AboutPreview({ onLearnMore, onBlogClick }) {
           </motion.p>
 
           <h2 data-about-reveal style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(2.4rem, 5vw, 3.8rem)', fontWeight: 900, color: '#C4B5FD', letterSpacing: '-0.02em', lineHeight: 1.05, marginBottom: '1.4rem' }}>
-            Thamar Nissi
+            Tamar Nissi
           </h2>
 
           <p data-about-reveal style={{ fontFamily: 'Manrope, sans-serif', fontSize: '1.05rem', color: 'rgba(253,248,240,0.6)', lineHeight: 1.85, marginBottom: '2rem' }}>
-            A licensed therapist with a warm, evidence-based approach. Thamar believes healing begins when we feel truly seen and safe — drawing from decades of clinical experience to create space for real transformation.
+            A licensed therapist with a warm, evidence-based approach. Tamar believes healing begins when we feel truly seen and safe — drawing from decades of clinical experience to create space for real transformation.
           </p>
 
           {/* Approach pillars */}
